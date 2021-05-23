@@ -1,0 +1,19 @@
+{
+  "name": "node_tile_server",
+  "version": "1.0.0",
+  "description": "Simple node.js tile server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "bootstrap": "node bootstrap.js"
+  },
+  "author": "Andrey Nikulin",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "carto": "^1.2.0",
+    "express": "^4.17.1",
+    "fast-xml-parser": "^3.19.0",
+    "mapnik": "^4.5.8"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "threads": 4,
+  "warningQueueLength": 30,
+  "maxZoom": 20,
+  "minZoom": 0,
+  "osm": {
+    "database": "osm",
+    "host": "127.0.0.1",
+    "port": "5432",
+    "user": "osm_user",
+    "password": "",
+    "geometryField": "way"
+  },
+  "cache": {
+    "enable": true,
+    "type": "database",
+    "cache_table_data": "osm_cache_data",
+    "cache_table_ready": "osm_cache_ready",
+    "cache_dir": "/tmp"
+  },
+  "fonts": {
+    "folder": "./fonts"
+  }
+}
