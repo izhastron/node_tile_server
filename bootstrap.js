@@ -90,7 +90,7 @@ async function buildDatabase() {
   }
   console.log('Try create user ', user)
   try {
-    const { stdout } = await exec(`cd /tmp && sudo -u postgres psql -w -c 'CREATE USER ${osm_user}${password === ""? "" : ` WITH password ${password}`};' 2>&1`)
+    const { stdout } = await exec(`cd /tmp && sudo -u postgres psql -w -c 'CREATE USER ${user}${password === ""? "" : ` WITH password ${password}`};' 2>&1`)
     if (stdout) console.log(stdout)
     console.log(`Create user ${user} success`)
   } catch(e) {
