@@ -30,7 +30,6 @@ _parts:
     host: @@host
     port: @@port
     user: @@user
-    password: @@password
     key_field: ""
     geometry_field: @@geometryField
     extent: "-20037508,-20037508,20037508,20037508"
