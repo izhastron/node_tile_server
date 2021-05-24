@@ -130,7 +130,7 @@ async function buildDatabase() {
   }
   console.log('Start import database data')
   const interval = setInterval(() => process.stdout('.'), 1000)
-  const { stdout } = await exec(`osm2pgsql --create -G --hstore --tag-transform-script ./openstreetmap-carto.lua -S ./openstreetmap-carto.style -d ${database} -H ${host} -P ${port} -U ${user} ${password === "" ? "": "-P " + password + " -W"} ${file} 2>&1`)
+  const { stdout } = await exec(`sudo -upostgres osm2pgsql --create -G --hstore --tag-transform-script ./openstreetmap-carto.lua -S ./openstreetmap-carto.style -d ${database} -H ${host} -P ${port} ${password === "" ? "": "-P " + password + " -W"} ${file} 2>&1`)
   clearInterval(interval)
   if(stdout) console.log(stdout)
   console.log('Import data to database success')
