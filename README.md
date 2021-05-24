@@ -23,3 +23,6 @@ The size of the meta tile must be 2 times larger than the size of a regular tile
 2) Large meta tile size, reduces the load on database queries
 3) The more threads, the faster the tiles are rendered, but the load on the render and database queries increases
 4) When changing threads and size, observe the load in htop and select the optimal
+
+To prepare the styles, the code was used https://github.com/gravitystorm/openstreetmap-carto.
+Thanks to them for providing the template engine.
