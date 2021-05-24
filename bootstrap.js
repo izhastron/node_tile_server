@@ -90,7 +90,7 @@ async function buildDatabase() {
   }
   console.log('Try create user ', user)
   try {
-    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres createuser ${user} -h ${host} -p ${port} ${password === "" ? '--no-password': `--password ${password}`}`)
+    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql -w -c 'CREATE USER ${osm_user}${password === ""? "" : `WITH password "${password}"`};'`)
     if (stderr) {
       console.error('Error create osm user:', user)
       console.error(stderr)
@@ -105,7 +105,7 @@ async function buildDatabase() {
   }
   console.log('Try create database ', database)
   try {
-    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres createdb ${database} -h ${host} -p ${port} -O ${user}`)
+    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql -w -c 'CREATE DATABASE ${database} OWNER ${user};'`)
     if (stderr) {
       console.error('Error create database:', user)
       console.error(stderr)
@@ -120,7 +120,7 @@ async function buildDatabase() {
   }
   console.log('Try create database extension postgis', database)
   try {
-    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql ${database} --command='CREATE EXTENSION postgis;'`)
+    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql ${database} -w --command='CREATE EXTENSION postgis;'`)
     if (stderr) {
       console.error('Error create database extension postgis')
       console.error(stderr)
@@ -135,7 +135,7 @@ async function buildDatabase() {
   }
   console.log('Try create database extension hstore', database)
   try {
-    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql ${database} --command='CREATE EXTENSION hstore;'`)
+    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql ${database} -w --command='CREATE EXTENSION hstore;'`)
     if (stderr) {
       console.error('Error create database extension hstore')
       console.error(stderr)

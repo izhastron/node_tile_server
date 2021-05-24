@@ -12,7 +12,7 @@
     "password": "",
     "geometryField": "way"
   },
-  "cacheDirectory": "/tmp/tiles/",
+  "cacheDirectory": "/var/cache/tile",
   "fonts": {
     "folder": "./fonts"
   }
