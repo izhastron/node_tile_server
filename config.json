@@ -1,8 +1,9 @@
 {
-  "threads": 4,
-  "warningQueueLength": 30,
+  "threads": 8,
   "maxZoom": 20,
   "minZoom": 0,
+  "tileSize": 256,
+  "metaTileSize": 256,
   "osm": {
     "database": "osm",
     "host": "127.0.0.1",
@@ -11,13 +12,7 @@
     "password": "",
     "geometryField": "way"
   },
-  "cache": {
-    "enable": true,
-    "type": "database",
-    "cache_table_data": "osm_cache_data",
-    "cache_table_ready": "osm_cache_ready",
-    "cache_dir": "/tmp"
-  },
+  "cacheDirectory": "/tmp/tiles/",
   "fonts": {
     "folder": "./fonts"
   }
