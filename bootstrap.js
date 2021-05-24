@@ -90,76 +90,49 @@ async function buildDatabase() {
   }
   console.log('Try create user ', user)
   try {
-    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql -w -c 'CREATE USER ${osm_user}${password === ""? "" : `WITH password "${password}"`};'`)
-    if (stderr) {
-      console.error('Error create osm user:', user)
-      console.error(stderr)
-      return false
-    }
-    console.log(stdout)
+    const { stdout } = await exec(`cd /tmp && sudo -u postgres psql -w -c 'CREATE USER ${osm_user}${password === ""? "" : ` WITH password ${password}`};' 2>&1`)
+    if (stdout) console.log(stdout)
     console.log(`Create user ${user} success`)
   } catch(e) {
     console.error('Error create osm user:', user)
-    console.error(e.stderr)
+    console.error(e)
     return false
   }
   console.log('Try create database ', database)
   try {
-    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql -w -c 'CREATE DATABASE ${database} OWNER ${user};'`)
-    if (stderr) {
-      console.error('Error create database:', user)
-      console.error(stderr)
-      return false
-    }
-    console.log(stdout)
+    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql -w -c 'CREATE DATABASE ${database} OWNER ${user};'  2>&1`)
+    if (stdout) console.log(stdout)
     console.log(`Create database ${database} success`)
   } catch(e) {
     console.error('Error create database:', database)
-    console.error(e.stderr)
+    console.error(e)
     return false
   }
   console.log('Try create database extension postgis', database)
   try {
-    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql ${database} -w --command='CREATE EXTENSION postgis;'`)
-    if (stderr) {
-      console.error('Error create database extension postgis')
-      console.error(stderr)
-      return false
-    }
-    console.log(stdout)
+    const { stdout } = await exec(`cd /tmp && sudo -u postgres psql ${database} -w --command='CREATE EXTENSION postgis;' 2>&1`)
+    if (stdout) console.log(stdout)
     console.log(`Create database extension postgis success`)
   } catch(e) {
     console.error('Error create database extension postgis')
-    console.error(e.stderr)
+    console.error(e)
     return false
   }
   console.log('Try create database extension hstore', database)
   try {
-    const { stdout, stderr } = await exec(`cd /tmp && sudo -u postgres psql ${database} -w --command='CREATE EXTENSION hstore;'`)
-    if (stderr) {
-      console.error('Error create database extension hstore')
-      console.error(stderr)
-      return false
-    }
-    console.log(stdout)
+    const { stdout } = await exec(`cd /tmp && sudo -u postgres psql ${database} -w --command='CREATE EXTENSION hstore;'  2>&1`)
+    if (stdout) console.log(stdout)
     console.log(`Create database extension hstore success`)
   } catch(e) {
     console.error('Error create database extension hstore')
-    console.error(e.stderr)
+    console.error(e)
     return false
   }
   console.log('Start import database data')
-  const { stdout, stderr } = await exec(`osm2pgsql --create -G --hstore --tag-transform-script ./openstreetmap-carto.lua -S ./openstreetmap-carto.style -d ${database} -H ${host} -P ${port} -U ${user} ${password === "" ? "": "-P " + password + " -W"} ${file} 2>&1`)
   const interval = setInterval(() => process.stdout('.'), 1000)
-  if (stderr) {
-    clearInterval(interval)
-    console.error(stderr)
-    console.error('Error import database data from osm2pgsql, check config.json and availability osm2pgsql')
-    return false
-  }
+  const { stdout } = await exec(`osm2pgsql --create -G --hstore --tag-transform-script ./openstreetmap-carto.lua -S ./openstreetmap-carto.style -d ${database} -H ${host} -P ${port} -U ${user} ${password === "" ? "": "-P " + password + " -W"} ${file} 2>&1`)
   clearInterval(interval)
-  console.log()
-  console.log(stdout)
+  if(stdout) console.log(stdout)
   console.log('Import data to database success')
   return true
 }
