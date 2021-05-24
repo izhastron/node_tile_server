@@ -26,5 +26,5 @@ COPY ./pg_hba.conf /var/lib/postgresql/12/main/pg_hba.conf
 COPY ./postgresql.conf /var/lib/postgresql/12/main/postgresql.conf
 RUN pg_ctlcluster 12 main --skip-systemctl-redirect start && npm run bootstrap data.pbf -y && pg_ctlcluster 12 main --skip-systemctl-redirect stop
 RUN rm -rf /opt/tile_server/data.pbf
-CMD [ "/usr/bin/node /opt/tile_server/index.js" ]
+CMD [ "pg_ctlcluster 12 main --skip-systemctl-redirect start && /usr/bin/node /opt/tile_server/index.js" ]
 EXPOSE 3000
