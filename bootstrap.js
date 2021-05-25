@@ -83,7 +83,7 @@ async function removeMissingLayers() {
 async function buildDatabase() {
   const file = process.argv[2]
   const { database, host, port, user, password } = config.osm
-  const PGPASSWORD = password ? `PGPASSWORD=${password} ` : ""
+  const PGPASSWORD = password !== "" ? `PGPASSWORD=${password} ` : ""
   if (!file) {
     console.error('Args not have pbf file for import database')
     return false
