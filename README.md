@@ -11,8 +11,8 @@ How run in docker?
 1) Copy data.pbf to docker folder
 2) Change working directory to docker
 3) Run docker build ./ -t tag_name
-4) Run container docker run -t tag_name
-5) Go to page http://127.0.0.1/
+4) Run container docker run -p 3000:3000 -t tag_name
+5) Go to page http://127.0.0.1:3000/
 
 How to tune performance?
 
