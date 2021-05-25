@@ -1,3 +1,11 @@
+
+Example tiles
+![screenshot](https://raw.github.com/izhastron/node_tile_server/main/images/city.png)
+
+Cold render without cache
+threads = 8, metaTileSize = 1024, store ssd
+![screenshot](https://raw.github.com/izhastron/node_tile_server/main/images/render.png)
+
 How it works?
 1) To start, you need to install the mapnik dynamic library and the osm2pgsql utility
 2) Clone the repository and install the npm install packages
