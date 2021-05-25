@@ -39,7 +39,7 @@ To prepare the styles, the code was used https://github.com/gravitystorm/openstr
 Thanks to them for providing the template engine.
 
 
-***Where to get geodata***
+***Where to get geodata?***
 
 1) You can download ready-made cuts. For example: https://needgeo.com/
 2) You can download a world map and cut it yourself
