@@ -82,15 +82,15 @@ async function removeMissingLayers() {
 
 async function buildDatabase() {
   const file = process.argv[2]
-  const { database, host, port, user } = config.osm
-
+  const { database, host, port, user, password } = config.osm
+  const PGPASSWORD = password ? `PGPASSWORD=${password} ` : ""
   if (!file) {
     console.error('Args not have pbf file for import database')
     return false
   }
   console.log('Try create user', user)
   try {
-    const { stdout } = await exec(`sudo -u postgres psql -w --command='CREATE USER ${user};' 2>&1`)
+    const { stdout } = await exec(`${PGPASSWORD}sudo -u postgres psql -w -h ${host} -p ${port} --command='CREATE USER ${user};' 2>&1`)
     if (stdout) console.log(stdout)
     console.log(`Create user ${user} success`)
   } catch(e) {
@@ -100,7 +100,7 @@ async function buildDatabase() {
   }
   console.log('Try create database', database)
   try {
-    const { stdout } = await exec(`sudo -u postgres psql -w --command='CREATE DATABASE ${database} OWNER ${user};' 2>&1`)
+    const { stdout } = await exec(`${PGPASSWORD}sudo -u postgres psql -w -h ${host} -p ${port} --command='CREATE DATABASE ${database} OWNER ${user};' 2>&1`)
     if (stdout) console.log(stdout)
     console.log(`Create database ${database} success`)
   } catch(e) {
@@ -110,7 +110,7 @@ async function buildDatabase() {
   }
   console.log('Try create database extension postgis', database)
   try {
-    const { stdout } = await exec(`sudo -u postgres psql ${database} -w --command='CREATE EXTENSION postgis;' 2>&1`)
+    const { stdout } = await exec(`${PGPASSWORD}sudo -u postgres psql ${database} -w -h ${host} -p ${port} --command='CREATE EXTENSION postgis;' 2>&1`)
     if (stdout) console.log(stdout)
     console.log(`Create database extension postgis success`)
   } catch(e) {
@@ -120,7 +120,7 @@ async function buildDatabase() {
   }
   console.log('Try create database extension hstore', database)
   try {
-    const { stdout } = await exec(`sudo -u postgres psql ${database} -w --command='CREATE EXTENSION hstore;'  2>&1`)
+    const { stdout } = await exec(`${PGPASSWORD}sudo -u postgres psql ${database} -w -h ${host} -p ${port} --command='CREATE EXTENSION hstore;'  2>&1`)
     if (stdout) console.log(stdout)
     console.log(`Create database extension hstore success`)
   } catch(e) {
@@ -130,7 +130,7 @@ async function buildDatabase() {
   }
   console.log('Start import database data')
   const interval = setInterval(() => process.stdout.write('.'), 1000)
-  const { stdout } = await exec(`sudo -upostgres osm2pgsql --create -G --hstore --tag-transform-script ./openstreetmap-carto.lua -S ./openstreetmap-carto.style -d ${database} -H ${host} -P ${port} ${file} 2>&1`)
+  const { stdout } = await exec(`${PGPASSWORD}sudo -upostgres osm2pgsql --create -G --hstore --tag-transform-script ./openstreetmap-carto.lua -S ./openstreetmap-carto.style -d ${database} -H ${host} -P ${port} ${file} 2>&1`)
   clearInterval(interval)
   if(stdout) console.log(stdout)
   console.log('Import data to database success')
