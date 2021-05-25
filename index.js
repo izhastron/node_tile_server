@@ -61,6 +61,7 @@ app.get('/:x/:y/:z', async (req, res) => {
 })
 
 async function main() {
+  console.log('Loading stylesheet and start server...')
   try {
     await fs.access(path.resolve(cacheDirectory), fsSync.constants.F_OK)
   } catch(e) {

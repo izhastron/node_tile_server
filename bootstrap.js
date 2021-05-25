@@ -138,17 +138,20 @@ async function buildDatabase() {
 }
 
 async function bootstrap() {
+  console.log('Start bootstrap database')
   const isBuildDataBase = await buildDatabase() 
   if (!isBuildDataBase) {
     console.error('Error import database, please run npm run bootstrap filename.pbf')
     process.exit(1)
   }
+  console.log('Start render style')
   const isStyleRender = await renderStyle()
   if (!isStyleRender) {
     console.error('Error render style file')
     process.exit(1)
   }
   console.log('Style render complite')
+  console.log('Start remove missing layers')
   const isRemoved = await removeMissingLayers()
   if (!isRemoved) {
     console.error('Error remove missing layers')
