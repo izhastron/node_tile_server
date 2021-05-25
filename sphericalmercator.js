@@ -1,37 +1,33 @@
-var mapnik = require('mapnik');
-var proj4 = '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over';
-var mercator = new mapnik.Projection(proj4);
+const mapnik = require('mapnik')
+const { tileSize } = require('./config.json')
+const proj4 = '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over';
+const mercator = new mapnik.Projection(proj4)
 
 function SphericalMercator() {
-    var size = 256
+    let size = tileSize
     this.Bc = []
     this.Cc = []
-    this.zc = []
-    this.Ac = []
-    this.DEG_TO_RAD = Math.PI / 180
+    this.Zc = []
     this.RAD_TO_DEG = 180 / Math.PI
-    this.size = 256
-    this.levels = 99
-    this.proj4 = proj4
-    for (var d = 0; d < this.levels; d++) {
+    this.size = tileSize
+    for (let d = 0; d < 99; d++) {
         this.Bc.push(size / 360)
         this.Cc.push(size / (2 * Math.PI))
-        this.zc.push(size / 2)
-        this.Ac.push(size)
+        this.Zc.push(size / 2)
         size *= 2
     }
 }
-SphericalMercator.prototype.px_to_ll = function(px, zoom) {
-    var zoom_denom = this.zc[zoom]
-    var g = (px[1] - zoom_denom) / (-this.Cc[zoom])
-    var lat = (px[0] - zoom_denom) / this.Bc[zoom]
-    var lon = this.RAD_TO_DEG * (2 * Math.atan(Math.exp(g)) - 0.5 * Math.PI)
+SphericalMercator.prototype.pxTolatlon = function([x, y], zoom) {
+    const zoomDenominator = this.Zc[zoom]
+    const g = (y - zoomDenominator) / (-this.Cc[zoom])
+    const lat = (x - zoomDenominator) / this.Bc[zoom]
+    const lon = this.RAD_TO_DEG * (2 * Math.atan(Math.exp(g)) - 0.5 * Math.PI)
     return [lat, lon]
 }
-SphericalMercator.prototype.xyz_to_envelope = function(x, y, zoom) {
-    var ll = [x * this.size, (y + 1) * this.size]
-    var ur = [(x + 1) * this.size, y * this.size]
-    var bbox = this.px_to_ll(ll, zoom).concat(this.px_to_ll(ur, zoom))
+SphericalMercator.prototype.xyzToEnvelope = function(x, y, zoom) {
+    const upPx = [x * this.size, (y + 1) * this.size]
+    const downPx = [(x + 1) * this.size, y * this.size]
+    const bbox = this.pxTolatlon(upPx, zoom).concat(this.pxTolatlon(downPx, zoom))
     return mercator.forward(bbox)
 }
 

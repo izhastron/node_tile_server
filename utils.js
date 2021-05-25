@@ -1,5 +1,5 @@
 module.exports.parseXYZ = function(req) {
-  var matches = req.url.match(/(\d+)/g)
+  const matches = req.url.match(/(\d+)/g)
   if (matches && matches.length == 3) {
     try {
       const x = parseInt(matches[1], 10)
@@ -10,7 +10,5 @@ module.exports.parseXYZ = function(req) {
       console.error(e)
       return []
     }
-  } else {
-    return []
-  }
+  } else return []
 }

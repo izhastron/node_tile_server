@@ -1,86 +1,74 @@
  
 const express = require('express')
-const app = express()
-const { parseXYZ } = require('./utils')
-const { RenderQueue } = require('./queue')
 const fs = require('fs').promises
 const fsSync = require('fs')
 const path = require('path')
-const { cacheDirectory, tileSize, metaTileSize } = require('./config.json')
-const port = 3000
-const renderQueue = new RenderQueue()
-const DEBUG = true
+const { parseXYZ } = require('./utils')
+const { RenderPool } = require('./queue')
+const { cache } = require('./config.json')
 
+const app = express()
+const port = 3000
+const renderPool = new RenderPool()
+const DEBUG = false
 
 app.get('/', async (req, res) => {
   try {
-    const index = await fs.readFile(path.resolve(__dirname, 'index.html'))
+    const page = await fs.readFile(path.resolve(__dirname, 'index.html'))
     res.writeHead(500, {'Content-Type': 'text/html'})
-    res.end(index)
+    return res.end(page)
   } catch(e) {
     console.error(e)
     res.writeHead(500, {'Content-Type': 'text/plain'})
-    if (DEBUG) res.end(e.message)
-    else res.end('Server error')
+    if (DEBUG) return res.end(e.message)
+    else return res.end('Server error 500')
   }
 })
+
 app.get('/:x/:y/:z', async (req, res) => {
   const [x, y, z] = parseXYZ(req)
-  if (!x || !y || !y) {
-    console.log('No x, y, z provided')
+
+  if ([x, y, z].includes(undefined)) {
     res.writeHead(500, {'Content-Type': 'text/plain'})
-    res.end('No x, y, z provided')
-    return
+    return res.end('Error parse x, y, z')
   }
-  try {
-    const tile = await fs.readFile(path.resolve(cacheDirectory, String(z), String(x) , String(y) + '.png'))
-    res.writeHead(200, {'Content-Type': 'image/png'})
-    res.end(tile)
-    return
-  } catch(e) {}
-  try {
-    const result = await renderQueue.push(x, y, z)
-    if (result) {
-      const image = await fs.readFile(path.resolve(cacheDirectory, String(z), String(x) , String(y) + '.png'))
+
+  if (cache.enable) {
+    try {
+      const tile = await fs.readFile(path.resolve(cache.directory, [z, x, y].join('/') + '.png'))
       res.writeHead(200, {'Content-Type': 'image/png'})
-      res.end(image)
-      return
+      return res.end(tile)
+    } catch(e) {}
+  }
+  
+  try {
+    const tile = await renderPool.push(x, y, z)
+    if (tile !== false) {
+      res.writeHead(200, {'Content-Type': 'image/png'})
+      return res.end(tile)
     } else {
       res.writeHead(500, {'Content-Type': 'text/plain'})
-      res.end('Server error 500')
-      return
+      return res.end('Server error 500')
     }
   } catch(e) {
-    console.error('Error response tile')
     console.error(e)
     res.writeHead(500, {'Content-Type': 'text/plain'})
-    if (DEBUG) res.end(e.message)
-    else res.end('Server error 500')
-    return
+    if (DEBUG) return res.end(e.message)
+    else return res.end('Server error 500')
   }
 })
 
 async function main() {
   console.log('Loading stylesheet and start server...')
   try {
-    await fs.access(path.resolve(cacheDirectory), fsSync.constants.F_OK)
+    if (cache.enable) await fs.access(path.resolve(cache.directory), fsSync.constants.F_OK)
+    await renderPool.loading()
   } catch(e) {
-    console.error(e)
-    console.error('ERROR: Error access to cacheDir', cacheDirectory)
-    process.exit(1)
-  }
-  try {
-    await renderQueue.loading()
-    renderQueue.start()
-  } catch(e) {
-    console.error('ERROR: Error loading stylesheet to mapnik')
     console.error(e)
     process.exit(1)
   }
 }
 
 main().then(() => {
-  app.listen(port, () => {
-    console.log(`Tile server start http://localhost:${port}`)
-  })
+  app.listen(port, () => console.log(`Tile server start http://localhost:${port}`))
 })
