@@ -37,3 +37,9 @@ The size of the meta tile must be 2 times larger than the size of a regular tile
 
 To prepare the styles, the code was used https://github.com/gravitystorm/openstreetmap-carto.
 Thanks to them for providing the template engine.
+
+
+***Where to get geodata***
+
+1) You can download ready-made cuts. For example: https://needgeo.com/
+2) You can download a world map and cut it yourself
