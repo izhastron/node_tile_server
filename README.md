@@ -1,12 +1,15 @@
 
-Example tiles
+***Example tiles***
+
 ![screenshot](https://raw.github.com/izhastron/node_tile_server/main/images/city.png)
 
-Cold render without cache
+***Cold render without cache***
+
 threads = 8, metaTileSize = 1024, store ssd
+
 ![screenshot](https://raw.github.com/izhastron/node_tile_server/main/images/render.png)
 
-How it works?
+***How it works?***
 1) To start, you need to install the mapnik dynamic library and the osm2pgsql utility
 2) Clone the repository and install the npm install packages
 3) It is necessary to download a file with geodata in pbf format
@@ -15,14 +18,14 @@ How it works?
 6) Start the server: npm run start
 7) The project has an index.html file for checking the map
 
-How run in docker?
+***How run in docker?***
 1) Copy data.pbf to docker folder
 2) Change working directory to docker
 3) Run docker build ./ -t tag_name
 4) Run container docker run -p 3000:3000 -t tag_name
 5) Go to page http://127.0.0.1:3000/
 
-How to tune performance?
+***How to tune performance?***
 
 The main load is caused by the rendering of tiles and queries to the database
 The size of the meta tile must be 2 times larger than the size of a regular tile, i.e. 1, 2, 4, 8 times larger
