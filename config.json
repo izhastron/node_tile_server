@@ -1,23 +1,26 @@
 {
-  "threads": 12,
+  "threads": 8,
   "maxZoom": 20,
   "minZoom": 0,
   "tileSize": 256,
-  "metaTileSize": 1024,
+  "metaTileSize": 2048,
   "queueSize": 200,
+  "loggerLevel": "info",
   "osm": {
     "database": "osm",
     "host": "127.0.0.1",
-    "port": "5432",
+    "port": 5432,
     "user": "osm_user",
-    "password": "",
-    "geometryField": "way"
+    "password": null,
+    "postgresPassword": null,
+    "geometryField": null
+  },
+  "server": {
+    "address": "127.0.0.1",
+    "port": 3000
   },
   "cache": {
     "enable": true,
-    "directory": "/tmp/tiles/"
-  },
-  "fonts": {
-    "folder": "./fonts"
+    "directory": "/var/cache/tile"
   }
 }

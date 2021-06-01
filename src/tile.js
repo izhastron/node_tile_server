@@ -1,13 +1,13 @@
 const fs = require('fs').promises
 const path = require('path')
 const mercator = require('./sphericalmercator')
-const { tileSize, metaTileSize, cache } = require('./config.json')
+const config = require('../config')
+const logger = require("log4js").getLogger("tile_server")
 
-if (![0, 1, 2, 3, 4].includes(parseInt(Math.log2(metaTileSize/tileSize)))){
-  console.log('Bad value metaTileSize in config.json')
-  process.exit(1)
-}
-const limitZ = parseInt(Math.log2(metaTileSize/tileSize))
+
+const count =  parseInt(config.metaTileSize / config.tileSize)
+const getIndex = (x, y, z) => (z > config.zLimit) && config.tileSize !== config.metaTileSize ? `meta_${parseInt(x/count)}_${parseInt(y/count)}_${z - parseInt(Math.log2(count))}`: `tile_${x}_${y}_${z}`
+
 
 class Tile {
   constructor(x, y, z) {
@@ -16,9 +16,9 @@ class Tile {
     this.x = x
     this.y = y
     this.z = z
-    this.size = tileSize
+    this.size = config.tileSize
     this.type = 'tile'
-    this.index = `tile_${x}_${y}_${z}`
+    this.index = getIndex(x, y, z)
     this.bbox = mercator.xyzToEnvelope(this.x, this.y, this.z)
     this.isRender = new Promise((resolve, reject) => {
       this.resolve = resolve
@@ -28,24 +28,25 @@ class Tile {
     })
   }
 
-  async save(image) {
+  async save(promiseImage) {
+    const image = await promiseImage
+    logger.debug(`x:${this.x} y:${this.y} z:${this.z} tile is rendered`)
     try {
-      if (cache.enable) {
-        const imagePath = path.resolve(cache.directory, String(this.z), String(this.x))
+      if (config.cache.enable) {
+        const imagePath = path.resolve(config.cache.directory, String(this.z), String(this.x))
         await fs.mkdir(imagePath, { recursive: true })
         await fs.writeFile(path.resolve(imagePath, String(this.y) + '.png'), image)
+        logger.debug(`x:${this.x} y:${this.y} z:${this.z} tile is cached ${path.resolve(config.cache.directory, String(this.z), String(this.x))}`)
       }
-      this.resolve(image)
     } catch(e) {
-      console.error(e)
-      this.resolve(false)
+      logger.error(e)
     }
+    this.resolve(image)
   }
 }
 
 class MetaTile {
   constructor(x, y, z) {
-    if ((z - 3) < 0) throw Error('Can not render metatile where zoom < 0')
     this.resolve
     this.reject
     this.isRender = new Promise((resolve, reject) => {
@@ -55,16 +56,16 @@ class MetaTile {
       this.resolve.bind(this)
     })
     this.type = 'meta'
-    this.count = parseInt(metaTileSize / tileSize)
+    this.count = parseInt(config.metaTileSize / config.tileSize)
     this.x = parseInt(x/this.count)
     this.y = parseInt(y/this.count)
     this.z = z - parseInt(Math.log2(this.count))
-    this.index = `meta_${this.x}_${this.y}_${this.z}`
-    this.size = metaTileSize
+    this.index = getIndex(x, y, z)
+    this.size = config.metaTileSize
     this.bbox = mercator.xyzToEnvelope(this.x, this.y, this.z)
     this.tiles = []
-    this.xIndex = [0,1,2,3,4,5,6,7].map(value => this.x * this.count + value)
-    this.yIndex = [0,1,2,3,4,5,6,7].map(value => this.y * this.count + value)
+    this.xIndex = Array.from(Array(this.count).keys()).map(value => this.x * this.count + value)
+    this.yIndex = Array.from(Array(this.count).keys()).map(value => this.y * this.count + value)
     for (let x = 0; x < this.count; x++) {
       for (let y = 0; y < this.count; y++) {
         if (!this.tiles[x]) this.tiles[x] = []
@@ -81,6 +82,7 @@ class MetaTile {
         }
       }
     }
+    logger.error('Error find tile in meta tile', JSON.stringify(this))
   }
   getTile(x, y) {
     return this.tiles[x][y]
@@ -91,5 +93,7 @@ class MetaTile {
   }
 }
 
+
+module.exports.getIndex = getIndex
 module.exports.getIsRender = (tile, x, y) => tile.type === 'meta' ? tile.getTileXY(x, y).isRender : tile.isRender
-module.exports.tileFactory = (x, y, z) => (z > limitZ) && tileSize !== metaTileSize  ? new MetaTile(x ,y, z) : new Tile(x, y, z)
+module.exports.tileFactory = (x, y, z) => (z > config.zLimit) && config.tileSize !== config.metaTileSize  ? new MetaTile(x ,y, z) : new Tile(x, y, z)

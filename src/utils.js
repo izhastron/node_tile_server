@@ -12,3 +12,9 @@ module.exports.parseXYZ = function(req) {
     }
   } else return []
 }
+
+module.exports.sleep = function(ms) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(true), ms)
+  })
+}

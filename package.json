@@ -5,15 +5,20 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "bootstrap": "node bootstrap.js"
+    "init": "node manage.js --createdb --stylization",
+    "manage": "node manage.js"
   },
   "author": "Andrey Nikulin",
   "license": "MIT",
   "dependencies": {
+    "atomic": "^0.0.2",
     "bluebird": "^3.7.2",
     "carto": "^1.2.0",
     "express": "^4.17.1",
     "fast-xml-parser": "^3.19.0",
-    "mapnik": "^4.5.8"
+    "log4js": "^6.3.0",
+    "mapnik": "^4.5.8",
+    "node-pty": "^0.10.1",
+    "pg-pool": "^3.3.0"
   }
 }

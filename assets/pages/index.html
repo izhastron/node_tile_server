@@ -19,9 +19,9 @@
   </script>
   <script type="text/javascript">
     const mymap = L.map('mapid').setView([56.8608, 53.1992], 13)
-    L.tileLayer('http://127.0.0.1:3000/{z}/{x}/{y}', {
+    L.tileLayer(document.URL + '{z}/{x}/{y}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 17,
+        maxZoom: 20,
         minZoom: 0,
         tileSize: 256,
         zoomOffset: 0

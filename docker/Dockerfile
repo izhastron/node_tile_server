@@ -24,7 +24,7 @@ COPY ./config.json /opt/tile_server/config.json
 COPY ./data.pbf /opt/tile_server/data.pbf
 COPY ./pg_hba.conf /etc/postgresql/12/main/pg_hba.conf
 COPY ./postgresql.conf /etc/postgresql/12/madin/postgresql.conf
-RUN pg_ctlcluster 12 main --skip-systemctl-redirect start && npm run bootstrap data.pbf -y && pg_ctlcluster 12 main --skip-systemctl-redirect stop
+RUN pg_ctlcluster 12 main --skip-systemctl-redirect start && npm run init -- --file=data.pbf -y && pg_ctlcluster 12 main --skip-systemctl-redirect stop
 RUN rm -rf /opt/tile_server/data.pbf
 CMD [ "/bin/bash", "-c", "/usr/bin/pg_ctlcluster 12 main --skip-systemctl-redirect start && /usr/local/bin/node /opt/tile_server/index.js && pg_ctlcluster 12 main --skip-systemctl-redirect stop" ]
 EXPOSE 3000
