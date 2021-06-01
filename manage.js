@@ -95,7 +95,7 @@ async function createDatabase() {
         logger.info('Finish upload data to database')
         resolve()
       })
-      shell.write(`osm2pgsql --create -G --hstore --tag-transform-script ${path.resolve('./openstreetmap-carto.lua')} -S ${path.resolve('./openstreetmap-carto.style')} -d ${config.osm.database} -H ${config.osm.host} -P ${config.osm.port} -U ${config.osm.user} ${config.osm.password ? '--password ' + config.osm.password : ''} ${path.resolve(options.file)} 2>&1 && exit\r`)
+      shell.write(`osm2pgsql --slim --create -G --hstore --tag-transform-script ${path.resolve('./openstreetmap-carto.lua')} -S ${path.resolve('./openstreetmap-carto.style')} -d ${config.osm.database} -H ${config.osm.host} -P ${config.osm.port} -U ${config.osm.user} ${config.osm.password ? '--password ' + config.osm.password : ''} ${path.resolve(options.file)} 2>&1 && exit\r`)
     } catch(e) {
       reject(e)
     }
