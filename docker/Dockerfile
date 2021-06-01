@@ -9,7 +9,7 @@ RUN apt-get install locales -y --no-install-recommends
 RUN locale-gen en_US.UTF-8
 RUN echo 'LANGUAGE="en_US.UTF-8"' >> /etc/default/locale
 RUN echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale
-RUN apt install unzip wget postgresql postgis postgresql-12-postgis-3 git osm2pgsql npm sudo -y --no-install-recommends
+RUN apt install unzip wget postgresql postgis postgresql-12-postgis-3 git osm2pgsql npm sudo build-essential -y --no-install-recommends
 RUN npm install -g n
 RUN n 16
 RUN mkdir -p /opt/tile_server
