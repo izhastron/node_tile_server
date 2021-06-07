@@ -68,6 +68,13 @@ if (configJson.server.address) {
 if (configJson.server.port) {
   if(typeof(configJson.server.port) !== 'number') printError('"server.port" must be an number')
 }
+if (typeof(configJson.import) !== "object") printError('"import" must be an object')
+if (typeof(configJson.import.slim) !== "boolean") printError('"import.slim" must be an boolean')
+if (typeof(configJson.import.ram) !== "number") printError('"import.ram" must be an number')
+if (configJson.import.ram < 200) printError('"import.ram" must be large 200')
+if (typeof(configJson.import.proccess) !== "number") printError('"import.proccess" must be an number')
+if (configJson.import.proccess <= 0) printError('"import.proccess" must be large 0')
+
 
 class Config {
   constructor() {
@@ -104,6 +111,11 @@ class Config {
       attributeNamePrefix: '@@_',
       cdataTagName: "__cdata",
       format: true
+    }
+    this.import = {
+      slim: configJson.import.slim,
+      ram: configJson.import.ram,
+      process: configJson.import.proccess
     }
   }
 }

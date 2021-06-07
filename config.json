@@ -22,5 +22,10 @@
   "cache": {
     "enable": true,
     "directory": "/var/cache/tile"
+  },
+  "import": {
+    "slim": false,
+    "ram": 12000,
+    "proccess": 12
   }
 }
